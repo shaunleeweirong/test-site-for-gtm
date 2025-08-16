@@ -2,6 +2,7 @@
 
 import { sendGTMEvent } from '@next/third-parties/google'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Calendar, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AnimatedGroup } from '@/components/ui/animated-group'
@@ -14,7 +15,7 @@ const blogPosts = [
     excerpt: "Learn how to create scalable and performant web applications using the latest features in Next.js 14.",
     date: "2024-01-15",
     readTime: "5 min read",
-    image: "https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120",
+    image: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=800&q=80",
     category: "Development"
   },
   {
@@ -23,7 +24,7 @@ const blogPosts = [
     excerpt: "Discover how AI and modern technologies are reshaping the way businesses interact with their customers.",
     date: "2024-01-10",
     readTime: "7 min read",
-    image: "https://tailark.com/_next/image?url=%2Fmail2-light.png&w=3840&q=75",
+    image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&q=80",
     category: "Business"
   },
   {
@@ -32,7 +33,7 @@ const blogPosts = [
     excerpt: "Best practices for creating and maintaining design systems that grow with your organization.",
     date: "2024-01-05",
     readTime: "6 min read",
-    image: "https://html.tailus.io/blocks/customers/openai.svg",
+    image: "https://images.unsplash.com/photo-1558655146-364adfc90919?w=800&q=80",
     category: "Design"
   }
 ]
@@ -131,9 +132,11 @@ export default function BlogPage() {
               <div className="bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
                 {/* Post Image */}
                 <div className="aspect-video overflow-hidden bg-muted">
-                  <img
+                  <Image
                     src={post.image}
                     alt={post.title}
+                    width={800}
+                    height={450}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
