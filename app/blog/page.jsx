@@ -33,7 +33,7 @@ const blogPosts = [
     excerpt: "Best practices for creating and maintaining design systems that grow with your organization.",
     date: "2024-01-05",
     readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1558655146-364adfc90919?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&q=80",
     category: "Design"
   }
 ]
