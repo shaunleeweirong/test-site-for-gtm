@@ -1,5 +1,6 @@
 'use client'
 
+import { sendGTMEvent } from '@next/third-parties/google'
 import Link from 'next/link'
 import { Check, Zap, Shield, Palette, BarChart3, Users, Cog, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -175,13 +176,37 @@ export default function FeaturesPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="px-8">
-              <Link href="/demo">
+              <Link 
+                href="/demo"
+                onClick={(e) => {
+                  sendGTMEvent({ 
+                    event: 'click',
+                    event_category: 'engagement',
+                    event_action: 'click',
+                    event_label: 'Request Demo',
+                    page_location: '/features',
+                    click_element: 'primary_cta'
+                  })
+                }}
+              >
                 Request Demo
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="px-8">
-              <Link href="/">
+              <Link 
+                href="/"
+                onClick={(e) => {
+                  sendGTMEvent({ 
+                    event: 'click',
+                    event_category: 'engagement',
+                    event_action: 'click',
+                    event_label: 'Learn More',
+                    page_location: '/features',
+                    click_element: 'secondary_cta'
+                  })
+                }}
+              >
                 Learn More
               </Link>
             </Button>

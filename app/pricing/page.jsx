@@ -1,5 +1,6 @@
 'use client'
 
+import { sendGTMEvent } from '@next/third-parties/google'
 import Link from 'next/link'
 import { 
   Check, 
@@ -286,6 +287,15 @@ export default function PricingPage() {
                   className={`w-full ${plan.popular ? '' : 'variant-outline'}`}
                   variant={plan.popular ? 'default' : 'outline'}
                   asChild
+                  onClick={() => sendGTMEvent({ 
+                    event: 'click',
+                    event_category: 'engagement',
+                    event_action: 'click',
+                    event_label: plan.name === 'Enterprise' ? 'Contact Sales' : 'Start Free Trial',
+                    page_location: '/pricing',
+                    click_element: `pricing_tier_${plan.name.toLowerCase()}`,
+                    plan_name: plan.name
+                  })}
                 >
                   <Link href="/demo">
                     {plan.name === 'Enterprise' ? 'Contact Sales' : 'Start Free Trial'}
@@ -516,13 +526,38 @@ export default function PricingPage() {
             Join thousands of businesses already using Tailark to improve their customer engagement. Start your free trial today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="px-8">
+            <Button 
+              asChild 
+              size="lg" 
+              className="px-8"
+              onClick={() => sendGTMEvent({ 
+                event: 'click',
+                event_category: 'engagement',
+                event_action: 'click',
+                event_label: 'Start Free Trial',
+                page_location: '/pricing',
+                click_element: 'final_cta_primary'
+              })}
+            >
               <Link href="/demo">
                 Start Free Trial
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="px-8">
+            <Button 
+              asChild 
+              variant="outline" 
+              size="lg" 
+              className="px-8"
+              onClick={() => sendGTMEvent({ 
+                event: 'click',
+                event_category: 'engagement',
+                event_action: 'click',
+                event_label: 'Contact Sales',
+                page_location: '/pricing',
+                click_element: 'final_cta_secondary'
+              })}
+            >
               <Link href="/demo">
                 Contact Sales
               </Link>

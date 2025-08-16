@@ -1,5 +1,6 @@
 'use client'
 
+import { sendGTMEvent } from '@next/third-parties/google'
 import Link from 'next/link'
 import { 
   Brain, 
@@ -219,13 +220,38 @@ export default function AIModelsPage() {
             Integrate powerful AI models directly into your customer engagement platform. From GPT-4 to Claude, deploy cutting-edge AI to enhance every customer interaction.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="px-8">
+            <Button 
+              asChild 
+              size="lg" 
+              className="px-8"
+              onClick={() => sendGTMEvent({ 
+                event: 'click',
+                event_category: 'engagement',
+                event_action: 'click',
+                event_label: 'Try AI Features',
+                page_location: '/ai-models',
+                click_element: 'hero_primary_cta'
+              })}
+            >
               <Link href="/demo">
                 Try AI Features
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="px-8">
+            <Button 
+              asChild 
+              variant="outline" 
+              size="lg" 
+              className="px-8"
+              onClick={() => sendGTMEvent({ 
+                event: 'click',
+                event_category: 'engagement',
+                event_action: 'click',
+                event_label: 'Watch Demo',
+                page_location: '/ai-models',
+                click_element: 'hero_secondary_cta'
+              })}
+            >
               <Link href="#demo">
                 <Play className="mr-2 w-4 h-4" />
                 Watch Demo
@@ -437,13 +463,38 @@ export default function AIModelsPage() {
               Experience the power of AI integration with our interactive demo. See real-time responses and performance metrics.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="px-8">
+              <Button 
+                asChild 
+                size="lg" 
+                className="px-8"
+                onClick={() => sendGTMEvent({ 
+                  event: 'click',
+                  event_category: 'engagement',
+                  event_action: 'click',
+                  event_label: 'Start Interactive Demo',
+                  page_location: '/ai-models',
+                  click_element: 'demo_section_primary'
+                })}
+              >
                 <Link href="/demo">
                   <Play className="mr-2 w-4 h-4" />
                   Start Interactive Demo
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="px-8">
+              <Button 
+                asChild 
+                variant="outline" 
+                size="lg" 
+                className="px-8"
+                onClick={() => sendGTMEvent({ 
+                  event: 'click',
+                  event_category: 'engagement',
+                  event_action: 'click',
+                  event_label: 'View Performance Metrics',
+                  page_location: '/ai-models',
+                  click_element: 'demo_section_secondary'
+                })}
+              >
                 <Link href="#metrics">
                   <BarChart3 className="mr-2 w-4 h-4" />
                   View Performance Metrics
@@ -650,13 +701,38 @@ export default function AIModelsPage() {
             Start with our free trial and see how AI can transform your customer engagement. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="px-8">
+            <Button 
+              asChild 
+              size="lg" 
+              className="px-8"
+              onClick={() => sendGTMEvent({ 
+                event: 'click',
+                event_category: 'engagement',
+                event_action: 'click',
+                event_label: 'Start Free Trial',
+                page_location: '/ai-models',
+                click_element: 'final_cta_primary'
+              })}
+            >
               <Link href="/demo">
                 <Sparkles className="mr-2 w-4 h-4" />
                 Start Free Trial
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="px-8">
+            <Button 
+              asChild 
+              variant="outline" 
+              size="lg" 
+              className="px-8"
+              onClick={() => sendGTMEvent({ 
+                event: 'click',
+                event_category: 'engagement',
+                event_action: 'click',
+                event_label: 'View Pricing',
+                page_location: '/ai-models',
+                click_element: 'final_cta_secondary'
+              })}
+            >
               <Link href="/pricing">
                 View Pricing
               </Link>

@@ -1,5 +1,6 @@
 'use client'
 
+import { sendGTMEvent } from '@next/third-parties/google'
 import React from 'react'
 import Link from 'next/link'
 import { ArrowRight, ChevronRight, Menu, X } from 'lucide-react'
@@ -40,6 +41,14 @@ export function HeroSection() {
                                 <AnimatedGroup variants={transitionVariants}>
                                     <Link
                                         href="/ai-models"
+                                        onClick={() => sendGTMEvent({ 
+                                          event: 'click',
+                                          event_category: 'engagement',
+                                          event_action: 'click',
+                                          event_label: 'Introducing Support for AI Models',
+                                          page_location: '/',
+                                          click_element: 'announcement_banner'
+                                        })}
                                         className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950">
                                         <span className="text-foreground text-sm">Introducing Support for AI Models</span>
                                         <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
@@ -85,7 +94,15 @@ export function HeroSection() {
                                         <Button
                                             asChild
                                             size="lg"
-                                            className="rounded-xl px-5 text-base">
+                                            className="rounded-xl px-5 text-base"
+                                            onClick={() => sendGTMEvent({ 
+                                              event: 'click',
+                                              event_category: 'engagement',
+                                              event_action: 'click',
+                                              event_label: 'Start Building',
+                                              page_location: '/',
+                                              click_element: 'hero_primary_cta'
+                                            })}>
                                             <Link href="#link">
                                                 <span className="text-nowrap">Start Building</span>
                                             </Link>
@@ -96,7 +113,15 @@ export function HeroSection() {
                                         asChild
                                         size="lg"
                                         variant="ghost"
-                                        className="h-10.5 rounded-xl px-5">
+                                        className="h-10.5 rounded-xl px-5"
+                                        onClick={() => sendGTMEvent({ 
+                                          event: 'click',
+                                          event_category: 'engagement',
+                                          event_action: 'click',
+                                          event_label: 'Request a demo',
+                                          page_location: '/',
+                                          click_element: 'hero_secondary_cta'
+                                        })}>
                                         <Link href="/demo">
                                             <span className="text-nowrap">Request a demo</span>
                                         </Link>
@@ -284,6 +309,14 @@ const HeroHeader = () => {
                                     <li key={index}>
                                         <Link
                                             href={item.href}
+                                            onClick={() => sendGTMEvent({ 
+                                              event: 'click',
+                                              event_category: 'navigation',
+                                              event_action: 'click',
+                                              event_label: item.name,
+                                              page_location: '/',
+                                              click_element: 'main_navigation'
+                                            })}
                                             className="text-muted-foreground hover:text-accent-foreground block duration-150">
                                             <span>{item.name}</span>
                                         </Link>
@@ -299,6 +332,14 @@ const HeroHeader = () => {
                                         <li key={index}>
                                             <Link
                                                 href={item.href}
+                                                onClick={() => sendGTMEvent({ 
+                                                  event: 'click',
+                                                  event_category: 'navigation',
+                                                  event_action: 'click',
+                                                  event_label: item.name,
+                                                  page_location: '/',
+                                                  click_element: 'mobile_navigation'
+                                                })}
                                                 className="text-muted-foreground hover:text-accent-foreground block duration-150">
                                                 <span>{item.name}</span>
                                             </Link>

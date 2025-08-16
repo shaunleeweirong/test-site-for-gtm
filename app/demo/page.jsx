@@ -292,7 +292,14 @@ export default function DemoPage() {
                 <Button 
                   type="submit" 
                   className="w-full py-3 text-base"
-                  onClick={() => sendGTMEvent({ event: 'demo_form_submit_click' })}
+                  onClick={() => sendGTMEvent({ 
+                    event: 'click',
+                    event_category: 'engagement',
+                    event_action: 'click',
+                    event_label: 'Request Demo',
+                    page_location: '/demo',
+                    click_element: 'demo_form_submit'
+                  })}
                 >
                   Request Demo
                   <ArrowRight className="ml-2 w-4 h-4" />

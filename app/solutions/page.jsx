@@ -1,5 +1,6 @@
 'use client'
 
+import { sendGTMEvent } from '@next/third-parties/google'
 import Link from 'next/link'
 import { 
   UserPlus, 
@@ -514,13 +515,38 @@ export default function SolutionsPage() {
             Ready to transform your customer engagement? Let's discuss which solution is right for your business.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="px-8">
+            <Button 
+              asChild 
+              size="lg" 
+              className="px-8"
+              onClick={() => sendGTMEvent({ 
+                event: 'click',
+                event_category: 'engagement',
+                event_action: 'click',
+                event_label: 'Request Demo',
+                page_location: '/solutions',
+                click_element: 'primary_cta'
+              })}
+            >
               <Link href="/demo">
                 Request Demo
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="px-8">
+            <Button 
+              asChild 
+              variant="outline" 
+              size="lg" 
+              className="px-8"
+              onClick={() => sendGTMEvent({ 
+                event: 'click',
+                event_category: 'engagement',
+                event_action: 'click',
+                event_label: 'Speak with Expert',
+                page_location: '/solutions',
+                click_element: 'secondary_cta'
+              })}
+            >
               <Link href="/">
                 Speak with Expert
               </Link>
