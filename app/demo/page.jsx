@@ -18,23 +18,166 @@ export default function DemoPage() {
     message: ''
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [formStartTime, setFormStartTime] = useState(null)
+  const [fieldTimes, setFieldTimes] = useState({})
+  const [fieldFocusTime, setFieldFocusTime] = useState(null)
+  const [validationErrors, setValidationErrors] = useState({})
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    
+    // Clear validation error when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({ ...prev, [name]: null }))
+    }
+    
+    // Track form progress
+    const newFormData = { ...formData, [name]: value }
+    const completedFields = Object.values(newFormData).filter(val => val.trim() !== '').length
+    const totalRequiredFields = 5 // name, email, company, role, interest
+    const completionPercentage = Math.round((completedFields / totalRequiredFields) * 100)
+    
+    sendGTMEvent({
+      event: 'form_progress',
+      form_name: 'demo_request',
+      field_name: name,
+      fields_completed: completedFields,
+      total_fields: totalRequiredFields,
+      completion_percentage: completionPercentage,
+      page_location: '/demo'
+    })
+  }
+
+  const handleFieldFocus = (fieldName) => {
+    if (!formStartTime) {
+      setFormStartTime(Date.now())
+    }
+    setFieldFocusTime(Date.now())
+    
+    sendGTMEvent({
+      event: 'form_field_focus',
+      field_name: fieldName,
+      form_name: 'demo_request',
+      page_location: '/demo'
+    })
+  }
+
+  const handleFieldBlur = (fieldName, value) => {
+    if (fieldFocusTime) {
+      const timeSpent = Date.now() - fieldFocusTime
+      setFieldTimes(prev => ({ ...prev, [fieldName]: timeSpent }))
+    }
+    
+    const isCompleted = value && value.trim() !== ''
+    
+    sendGTMEvent({
+      event: 'form_field_blur',
+      field_name: fieldName,
+      field_completed: isCompleted,
+      form_name: 'demo_request',
+      time_spent: fieldFocusTime ? Date.now() - fieldFocusTime : 0,
+      page_location: '/demo'
+    })
+  }
+
+  const handleSelectChange = (fieldName, value, options) => {
+    sendGTMEvent({
+      event: 'form_select_option',
+      field_name: fieldName,
+      selected_value: value,
+      form_name: 'demo_request',
+      page_location: '/demo'
+    })
+  }
+
+  const validateField = (name, value) => {
+    let error = null
+    
+    switch (name) {
+      case 'name':
+        if (!value.trim()) error = 'required_field'
+        else if (value.trim().length < 2) error = 'too_short'
+        break
+      case 'email':
+        if (!value.trim()) error = 'required_field'
+        else if (!/\S+@\S+\.\S+/.test(value)) error = 'invalid_format'
+        break
+      case 'company':
+        if (!value.trim()) error = 'required_field'
+        break
+      case 'role':
+        if (!value) error = 'required_field'
+        break
+      case 'interest':
+        if (!value) error = 'required_field'
+        break
+    }
+    
+    if (error) {
+      setValidationErrors(prev => ({ ...prev, [name]: error }))
+      sendGTMEvent({
+        event: 'form_validation_error',
+        field_name: name,
+        error_type: error,
+        form_name: 'demo_request',
+        page_location: '/demo'
+      })
+    }
+    
+    return !error
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     
-    // Send GTM event
+    // Validate all required fields
+    const fieldsToValidate = ['name', 'email', 'company', 'role', 'interest']
+    let isValid = true
+    
+    fieldsToValidate.forEach(field => {
+      if (!validateField(field, formData[field])) {
+        isValid = false
+      }
+    })
+    
+    if (!isValid) {
+      sendGTMEvent({
+        event: 'form_submit_failed',
+        form_name: 'demo_request',
+        validation_errors: Object.keys(validationErrors).length,
+        page_location: '/demo'
+      })
+      return
+    }
+    
+    // Calculate total form completion time
+    const totalTime = formStartTime ? Math.round((Date.now() - formStartTime) / 1000) : 0
+    
+    // Send enhanced GTM event with analytics data
     sendGTMEvent({ 
       event: 'demo_request_submit',
       form_data: {
         company: formData.company,
         role: formData.role,
         interest: formData.interest
-      }
+      },
+      form_analytics: {
+        total_time_seconds: totalTime,
+        field_times: fieldTimes,
+        completion_percentage: 100,
+        validation_errors_count: 0
+      },
+      page_location: '/demo'
+    })
+    
+    // Send form completion time tracking
+    sendGTMEvent({
+      event: 'form_completion_time',
+      form_name: 'demo_request',
+      total_time: totalTime,
+      field_times: fieldTimes,
+      page_location: '/demo'
     })
 
     // Simulate form submission
@@ -51,6 +194,9 @@ export default function DemoPage() {
         interest: '',
         message: ''
       })
+      setFormStartTime(null)
+      setFieldTimes({})
+      setValidationErrors({})
     }, 3000)
   }
 
@@ -192,9 +338,18 @@ export default function DemoPage() {
                       required
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                      onFocus={() => handleFieldFocus('name')}
+                      onBlur={(e) => handleFieldBlur('name', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 ${
+                        validationErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-primary'
+                      }`}
                       placeholder="John Doe"
                     />
+                    {validationErrors.name && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {validationErrors.name === 'required_field' ? 'Name is required' : 'Name must be at least 2 characters'}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium mb-2">
@@ -207,9 +362,18 @@ export default function DemoPage() {
                       required
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                      onFocus={() => handleFieldFocus('email')}
+                      onBlur={(e) => handleFieldBlur('email', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 ${
+                        validationErrors.email ? 'border-red-500 focus:ring-red-500' : 'focus:ring-primary'
+                      }`}
                       placeholder="john@company.com"
                     />
+                    {validationErrors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {validationErrors.email === 'required_field' ? 'Email is required' : 'Please enter a valid email address'}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -225,9 +389,16 @@ export default function DemoPage() {
                       required
                       value={formData.company}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                      onFocus={() => handleFieldFocus('company')}
+                      onBlur={(e) => handleFieldBlur('company', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 ${
+                        validationErrors.company ? 'border-red-500 focus:ring-red-500' : 'focus:ring-primary'
+                      }`}
                       placeholder="Acme Corp"
                     />
+                    {validationErrors.company && (
+                      <p className="text-red-500 text-sm mt-1">Company name is required</p>
+                    )}
                   </div>
                   <div>
                     <label htmlFor="role" className="block text-sm font-medium mb-2">
@@ -238,8 +409,15 @@ export default function DemoPage() {
                       name="role"
                       required
                       value={formData.role}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                      onChange={(e) => {
+                        handleInputChange(e)
+                        handleSelectChange('role', e.target.value)
+                      }}
+                      onFocus={() => handleFieldFocus('role')}
+                      onBlur={(e) => handleFieldBlur('role', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 ${
+                        validationErrors.role ? 'border-red-500 focus:ring-red-500' : 'focus:ring-primary'
+                      }`}
                     >
                       <option value="">Select your role</option>
                       <option value="ceo">CEO</option>
@@ -250,6 +428,9 @@ export default function DemoPage() {
                       <option value="developer">Developer</option>
                       <option value="other">Other</option>
                     </select>
+                    {validationErrors.role && (
+                      <p className="text-red-500 text-sm mt-1">Please select your role</p>
+                    )}
                   </div>
                 </div>
 
@@ -262,8 +443,15 @@ export default function DemoPage() {
                     name="interest"
                     required
                     value={formData.interest}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                    onChange={(e) => {
+                      handleInputChange(e)
+                      handleSelectChange('interest', e.target.value)
+                    }}
+                    onFocus={() => handleFieldFocus('interest')}
+                    onBlur={(e) => handleFieldBlur('interest', e.target.value)}
+                    className={`w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 ${
+                      validationErrors.interest ? 'border-red-500 focus:ring-red-500' : 'focus:ring-primary'
+                    }`}
                   >
                     <option value="">Choose an option</option>
                     <option value="customer-engagement">Customer Engagement</option>
@@ -272,6 +460,9 @@ export default function DemoPage() {
                     <option value="integration">System Integration</option>
                     <option value="customization">Custom Solutions</option>
                   </select>
+                  {validationErrors.interest && (
+                    <p className="text-red-500 text-sm mt-1">Please select what interests you most</p>
+                  )}
                 </div>
 
                 <div>
@@ -284,6 +475,8 @@ export default function DemoPage() {
                     rows={4}
                     value={formData.message}
                     onChange={handleInputChange}
+                    onFocus={() => handleFieldFocus('message')}
+                    onBlur={(e) => handleFieldBlur('message', e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                     placeholder="Tell us about your specific needs or goals..."
                   />
